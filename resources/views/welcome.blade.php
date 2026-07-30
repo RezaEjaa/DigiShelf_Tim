@@ -774,7 +774,7 @@
         <div class="hero-container">
             <div class="hero-left">
                 <span class="hero-badge"><i class="fas fa-shield-alt"></i> Platform Perpustakaan Resmi & Terpercaya</span>
-                <h1>Perpustakaan Digital Terpercaya</h1>
+                <h1>Website Perpustakaan Digital Terpercaya</h1>
                 <p>Kelola koleksi buku dengan mudah, pantau peminjaman real-time, dan akses katalog digital kapan saja, di mana saja dengan sistem yang aman dan transparan.</p>
                 <div class="hero-buttons">
                     <a href="/register" class="btn-hero-primary"><i class="fas fa-book-open"></i> Mulai Sekarang</a>
