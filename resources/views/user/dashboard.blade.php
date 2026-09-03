@@ -274,6 +274,55 @@
         .book-item-dash:nth-child(n+3) { display: none; }
         .hero-stats { gap: 12px; }
     }
+.library-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin: 30px 0;
+}
+
+.library-stat-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    border: 1px solid #eee5dc;
+}
+
+.library-stat-icon {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    border-radius: 12px;
+    background: #F5EBDD;
+    color: #6D4C41;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.library-stat-info span {
+    display: block;
+    color: #888;
+    font-size: 13px;
+}
+
+.library-stat-info strong {
+    display: block;
+    color: #3E2723;
+    font-size: 28px;
+}
+
+@media (max-width: 768px) {
+    .library-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+} 
 </style>
 
 {{-- HERO --}}
@@ -337,6 +386,55 @@
         @empty
             <p style="color: #888; margin: 0;">Belum ada data buku di database.</p>
         @endforelse
+    </div>
+</div>
+{{-- STATISTIK PERPUSTAKAAN --}}
+@php
+    $totalBookTitles = \App\Models\Book::count();
+    $totalBookStock = \App\Models\Book::sum('stock');
+    $totalBookAvailable = \App\Models\Book::sum('available');
+    $totalBookBorrowed = max(0, $totalBookStock - $totalBookAvailable);
+@endphp
+
+<div class="library-stats">
+    <div class="library-stat-card">
+        <div class="library-stat-icon">
+            <i class="fas fa-book"></i>
+        </div>
+        <div class="library-stat-info">
+            <span>Total Judul</span>
+            <strong>{{ $totalBookTitles }}</strong>
+        </div>
+    </div>
+
+    <div class="library-stat-card">
+        <div class="library-stat-icon">
+            <i class="fas fa-layer-group"></i>
+        </div>
+        <div class="library-stat-info">
+            <span>Total Eksemplar</span>
+            <strong>{{ $totalBookStock }}</strong>
+        </div>
+    </div>
+
+    <div class="library-stat-card">
+        <div class="library-stat-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="library-stat-info">
+            <span>Buku Tersedia</span>
+            <strong>{{ $totalBookAvailable }}</strong>
+        </div>
+    </div>
+
+    <div class="library-stat-card">
+        <div class="library-stat-icon">
+            <i class="fas fa-book-reader"></i>
+        </div>
+        <div class="library-stat-info">
+            <span>Sedang Dipinjam</span>
+            <strong>{{ $totalBookBorrowed }}</strong>
+        </div>
     </div>
 </div>
 {{-- BUKU TERBARU --}}
