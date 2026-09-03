@@ -1,6 +1,96 @@
 {{-- Component: Book Grid - Cover Only with Modal --}}
 @props(['books', 'showSearch' => true])
+@php
+    if (!function_exists('detectBookGenre')) {
+        function detectBookGenre($title, $description = '')
+        {
+            $text = strtolower(($title ?? '') . ' ' . ($description ?? ''));
 
+            $genres = [
+                'Fantasy' => [
+                    'sihir', 'naga', 'kerajaan', 'penyihir',
+                    'fantasy', 'dunia lain', 'monster', 'elf',
+                    'ksatria', 'magic', 'mantra'
+                ],
+
+                'Misteri' => [
+                    'misteri', 'misterius', 'detektif', 'pembunuhan',
+                    'kasus', 'teka-teki', 'rahasia', 'penyelidikan',
+                    'kriminal', 'investigasi'
+                ],
+
+                'Romance' => [
+                    'cinta', 'romantis', 'romance', 'pacar',
+                    'kekasih', 'pernikahan', 'hubungan',
+                    'percintaan', 'jodoh'
+                ],
+
+                'Action' => [
+                    'pertempuran', 'pertarungan', 'perang', 'tentara',
+                    'prajurit', 'aksi', 'senjata', 'petarung',
+                    'serangan', 'battle', 'fight'
+                ],
+
+                'Horror' => [
+                    'horor', 'horror', 'hantu', 'setan',
+                    'arwah', 'teror', 'mengerikan',
+                    'supranatural', 'kesurupan', 'iblis'
+                ],
+
+                'Science Fiction' => [
+                    'robot', 'angkasa', 'luar angkasa', 'planet',
+                    'alien', 'teknologi', 'masa depan',
+                    'sains', 'ilmuwan', 'futuristik'
+                ],
+
+                'Adventure' => [
+                    'petualangan', 'perjalanan', 'menjelajah',
+                    'eksplorasi', 'pulau', 'hutan',
+                    'penjelajahan', 'petualang'
+                ],
+
+                'Education' => [
+                    'belajar', 'pendidikan', 'pelajaran', 'sekolah',
+                    'siswa', 'mahasiswa', 'pengetahuan',
+                    'pembelajaran', 'edukasi', 'materi'
+                ],
+
+                'History' => [
+                    'sejarah', 'kolonial', 'kemerdekaan',
+                    'perjuangan', 'masa lalu', 'peradaban',
+                    'penjajahan', 'sejarah indonesia'
+                ],
+
+                'Technology' => [
+                    'programming', 'pemrograman', 'komputer',
+                    'coding', 'software', 'hardware', 'internet',
+                    'website', 'aplikasi', 'database',
+                    'php', 'laravel', 'javascript', 'python'
+                ],
+            ];
+
+            $scores = [];
+
+            foreach ($genres as $genre => $keywords) {
+                $scores[$genre] = 0;
+
+                foreach ($keywords as $keyword) {
+                    if (str_contains($text, $keyword)) {
+                        $scores[$genre]++;
+                    }
+                }
+            }
+
+            arsort($scores);
+
+            $bestGenre = array_key_first($scores);
+
+            return ($bestGenre && $scores[$bestGenre] > 0)
+                ? $bestGenre
+                : 'Umum';
+        }
+    }
+@endphp
 <style>
     /* Search Section */
     .search-section {
