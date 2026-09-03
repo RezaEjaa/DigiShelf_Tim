@@ -1,96 +1,6 @@
 {{-- Component: Book Grid - Cover Only with Modal --}}
 @props(['books', 'showSearch' => true])
-@php
-    if (!function_exists('detectBookGenre')) {
-        function detectBookGenre($title, $description = '')
-        {
-            $text = strtolower(($title ?? '') . ' ' . ($description ?? ''));
 
-            $genres = [
-                'Fantasy' => [
-                    'sihir', 'naga', 'kerajaan', 'penyihir',
-                    'fantasy', 'dunia lain', 'monster', 'elf',
-                    'ksatria', 'magic', 'mantra'
-                ],
-
-                'Misteri' => [
-                    'misteri', 'misterius', 'detektif', 'pembunuhan',
-                    'kasus', 'teka-teki', 'rahasia', 'penyelidikan',
-                    'kriminal', 'investigasi'
-                ],
-
-                'Romance' => [
-                    'cinta', 'romantis', 'romance', 'pacar',
-                    'kekasih', 'pernikahan', 'hubungan',
-                    'percintaan', 'jodoh'
-                ],
-
-                'Action' => [
-                    'pertempuran', 'pertarungan', 'perang', 'tentara',
-                    'prajurit', 'aksi', 'senjata', 'petarung',
-                    'serangan', 'battle', 'fight'
-                ],
-
-                'Horror' => [
-                    'horor', 'horror', 'hantu', 'setan',
-                    'arwah', 'teror', 'mengerikan',
-                    'supranatural', 'kesurupan', 'iblis'
-                ],
-
-                'Science Fiction' => [
-                    'robot', 'angkasa', 'luar angkasa', 'planet',
-                    'alien', 'teknologi', 'masa depan',
-                    'sains', 'ilmuwan', 'futuristik'
-                ],
-
-                'Adventure' => [
-                    'petualangan', 'perjalanan', 'menjelajah',
-                    'eksplorasi', 'pulau', 'hutan',
-                    'penjelajahan', 'petualang'
-                ],
-
-                'Education' => [
-                    'belajar', 'pendidikan', 'pelajaran', 'sekolah',
-                    'siswa', 'mahasiswa', 'pengetahuan',
-                    'pembelajaran', 'edukasi', 'materi'
-                ],
-
-                'History' => [
-                    'sejarah', 'kolonial', 'kemerdekaan',
-                    'perjuangan', 'masa lalu', 'peradaban',
-                    'penjajahan', 'sejarah indonesia'
-                ],
-
-                'Technology' => [
-                    'programming', 'pemrograman', 'komputer',
-                    'coding', 'software', 'hardware', 'internet',
-                    'website', 'aplikasi', 'database',
-                    'php', 'laravel', 'javascript', 'python'
-                ],
-            ];
-
-            $scores = [];
-
-            foreach ($genres as $genre => $keywords) {
-                $scores[$genre] = 0;
-
-                foreach ($keywords as $keyword) {
-                    if (str_contains($text, $keyword)) {
-                        $scores[$genre]++;
-                    }
-                }
-            }
-
-            arsort($scores);
-
-            $bestGenre = array_key_first($scores);
-
-            return ($bestGenre && $scores[$bestGenre] > 0)
-                ? $bestGenre
-                : 'Umum';
-        }
-    }
-@endphp
 <style>
     /* Search Section */
     .search-section {
@@ -258,22 +168,7 @@
         color: #E53935;
         background: white;
     }
-.genre-badge {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    z-index: 10;
-    background: rgba(0, 0, 0, 0.75);
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.65rem;
-    font-weight: 600;
-    line-height: 1.2;
-    white-space: nowrap;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    pointer-events: none;
-}
+
     .book-cover-only {
         width: 100%;
         height: 100%;
@@ -788,43 +683,7 @@
                         @foreach($row as $idx => $book)
                             @if($book)
                                 <div class="book-item">
- 
-@if($book)
-    <div class="book-item">
-
-        @php
-            $genre = detectBookGenre(
-                $book->title,
-                $book->description ?? ''
-            );
-        @endphp
-
-        <span class="genre-badge">
-            <i class="fas fa-tag"></i>
-            {{ $genre }}
-        </span>
-@if($book)
-    <div class="book-item">
-
-        @php
-            $genre = detectBookGenre(
-                $book->title,
-                $book->description ?? ''
-            );
-        @endphp
-
-        <span class="genre-badge">
-            <i class="fas fa-tag"></i>
-            {{ $genre }}
-        </span>
-
-        @if(!$isAdmin)
-            <button class="fav-btn {{ in_array($book->id, $favoriteIds) ? 'active' : '' }}"
-                    onclick="event.stopPropagation(); toggleFav(this, {{ $book->id }})"
-                    title="Favorit">
-                <i class="fas fa-heart"></i>
-            </button>
-        @endif                                   @if(!$isAdmin)
+                                    @if(!$isAdmin)
                                         <button class="fav-btn {{ in_array($book->id, $favoriteIds) ? 'active' : '' }}"
                                                 onclick="event.stopPropagation(); toggleFav(this, {{ $book->id }})" title="Favorit">
                                             <i class="fas fa-heart"></i>
@@ -856,7 +715,7 @@
                         @foreach($row as $idx => $book)
                             @if($book)
                                 <div class="book-item">
-               <div class="book-item">                      @if(!$isAdmin)
+                                    @if(!$isAdmin)
                                         <button class="fav-btn {{ in_array($book->id, $favoriteIds) ? 'active' : '' }}"
                                                 onclick="event.stopPropagation(); toggleFav(this, {{ $book->id }})" title="Favorit">
                                             <i class="fas fa-heart"></i>
