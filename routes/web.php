@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\FavoriteController;
-
+use App\Http\Controllers\BackupController;
 // ── Public ────────────────────────────────────────────────────
 Route::get('/', fn () => view('welcome'));
 Route::get('/scan-peminjaman/{qr_code}', [BorrowController::class, 'scan'])->name('borrow.scan');
@@ -73,4 +73,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/users/{user}/edit',  [AdminUserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}',       [AdminUserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}',    [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    // Backup Database
+    Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
+    Route::post('/backup', [BackupController::class, 'create'])->name('backup.create');
+    Route::get('/backup/download/{filename}', [BackupController::class, 'download'])->name('backup.download');
 });
