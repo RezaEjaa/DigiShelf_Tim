@@ -5,13 +5,10 @@
 @section('page-subtitle', 'Peminjaman aktif dan menunggu verifikasi')
 
 @section('sidebar-menu')
-    <li><a href="{{ route('admin.dashboard') }}"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
-    <li><a href="{{ route('admin.books.index') }}"><i class="fas fa-book"></i><span>Kelola Buku</span></a></li>
-    <li><a href="{{ route('admin.books.create') }}"><i class="fas fa-plus-circle"></i><span>Tambah Buku</span></a></li>
-    <li><a href="{{ route('admin.borrowings.index') }}" class="active"><i class="fas fa-exchange-alt"></i><span>Kelola Peminjaman</span></a></li>
-    <li><a href="{{ route('admin.verify-qr.index') }}"><i class="fas fa-barcode"></i><span>Verifikasi Kode</span></a></li>
-    <li><a href="{{ route('admin.borrowings.history') }}"><i class="fas fa-history"></i><span>Riwayat Peminjaman</span></a></li>
-    <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users"></i><span>Kelola Pengguna</span></a></li>
+    <li><a href="{{ route('petugas.dashboard') }}"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+    <li><a href="{{ route('petugas.borrowings.index') }}" class="active"><i class="fas fa-exchange-alt"></i><span>Kelola Peminjaman</span></a></li>
+    <li><a href="{{ route('petugas.verify-qr.index') }}"><i class="fas fa-barcode"></i><span>Verifikasi Kode</span></a></li>
+    <li><a href="{{ route('petugas.borrowings.history') }}"><i class="fas fa-history"></i><span>Riwayat Peminjaman</span></a></li>
     <li class="logout-section">
         <form action="{{ url('/logout') }}" method="POST" class="logout-form">@csrf
             <button type="submit"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
@@ -74,7 +71,7 @@
 <div class="section">
     <div class="section-header">
         <h2>Peminjaman Aktif & Menunggu ({{ $requests->total() }})</h2>
-        <a href="{{ route('admin.verify-qr.index') }}" class="btn-qr">
+        <a href="{{ route('petugas.verify-qr.index') }}" class="btn-qr">
             <i class="fas fa-barcode"></i> Verifikasi Kode
         </a>
     </div>
@@ -106,7 +103,7 @@
                             <td><span class="badge badge-{{ $req->status }}">{{ $req->statusLabel() }}</span></td>
                             <td>
                                 @if($req->isPending())
-                                    <form action="{{ route('admin.verify-qr.confirm') }}" method="POST" style="display:inline;" data-confirm="Konfirmasi peminjaman dan serahkan buku ke user?">
+                                    <form action="{{ route('petugas.verify-qr.confirm') }}" method="POST" style="display:inline;" data-confirm="Konfirmasi peminjaman dan serahkan buku ke user?">
                                         @csrf
                                         <input type="hidden" name="request_id" value="{{ $req->id }}">
                                         <button type="submit" class="btn-action btn-verify">
@@ -114,7 +111,7 @@
                                         </button>
                                     </form>
                                 @elseif($req->isActive())
-                                    <form action="{{ route('admin.verify-qr.return') }}" method="POST" style="display:inline;" data-confirm="Konfirmasi buku telah dikembalikan?">
+                                    <form action="{{ route('petugas.verify-qr.return') }}" method="POST" style="display:inline;" data-confirm="Konfirmasi buku telah dikembalikan?">
                                         @csrf
                                         <input type="hidden" name="request_id" value="{{ $req->id }}">
                                         <button type="submit" class="btn-action btn-ret">

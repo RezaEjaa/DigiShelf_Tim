@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Pengguna - Digishelf')
+@section('title', 'Kelola Petugas - Digishelf')
 
-@section('page-title', 'Kelola Pengguna')
-@section('page-subtitle', 'Manajemen anggota perpustakaan')
+@section('page-title', 'Kelola Petugas')
+@section('page-subtitle', 'Manajemen petugas perpustakaan')
 
 @section('sidebar-menu')
     <li>
@@ -22,12 +22,12 @@
         </a>
     </li>
     <li>
-        <a href="{{ route('admin.users.index') }}" class="active">
+        <a href="{{ route('admin.users.index') }}" >
             <i class="fas fa-users"></i><span>Kelola Pengguna</span>
         </a>
     </li>
     <li>
-        <a href="{{ route('admin.petugas.index') }}" >
+        <a href="{{ route('admin.petugas.index') }}" class="active">
             <i class="fas fa-user-tie"></i><span>Kelola Petugas</span>
         </a>
     </li>
@@ -63,15 +63,29 @@
 
     .section-header h2 { font-size: 1.1rem; color: var(--text-dark); }
 
-    .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
-    .users-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 500px;
+    .btn-primary {
+        padding: 9px 18px;
+        background: linear-gradient(135deg, var(--wood-medium), var(--wood-dark));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.88rem;
+        text-decoration: none;
+        display: inline-block;
     }
 
-    .users-table th {
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+    .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    .petugas-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px;
+    }
+
+    .petugas-table th {
         background: var(--cream);
         padding: 13px 14px;
         text-align: left;
@@ -82,14 +96,14 @@
         white-space: nowrap;
     }
 
-    .users-table td {
+    .petugas-table td {
         padding: 13px 14px;
         border-bottom: 1px solid #F5F5F5;
         font-size: 0.88rem;
         vertical-align: middle;
     }
 
-    .users-table tr:hover { background: #FAFAFA; }
+    .petugas-table tr:hover { background: #FAFAFA; }
 
     .user-avatar {
         width: 36px;
@@ -118,7 +132,12 @@
         cursor: pointer;
         font-size: 0.8rem;
         white-space: nowrap;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 4px;
     }
+    .btn-edit { background: #E3F2FD; color: #1976D2; }
+    .btn-edit:hover { background: #1976D2; color: white; }
     .btn-delete { background: #FFEBEE; color: #C62828; }
     .btn-delete:hover { background: #C62828; color: white; }
 
@@ -154,13 +173,12 @@
     =========================== */
     @media (max-width: 768px) {
         .section { padding: 16px; }
-        .users-table th,
-        .users-table td { padding: 10px 10px; font-size: 0.82rem; }
+        .petugas-table th,
+        .petugas-table td { padding: 10px 10px; font-size: 0.82rem; }
     }
 
     @media (max-width: 480px) {
         .section { padding: 12px; }
-        /* Hide less important columns on small phones */
         .col-registered { display: none; }
     }
 </style>
@@ -171,42 +189,54 @@
     </div>
 @endif
 
+@if(session('error'))
+    <div style="background:#FFEBEE;color:#C62828;padding:13px 16px;border-radius:10px;margin-bottom:16px;font-size:0.9rem;">
+        {{ session('error') }}
+    </div>
+@endif
+
 <div class="section">
     <div class="section-header">
-        <h2>Daftar Pengguna ({{ $users->total() }})</h2>
+        <h2>Daftar Petugas ({{ $petugas->total() }})</h2>
+        <a href="{{ route('admin.petugas.create') }}" class="btn-primary">
+            <i class="fas fa-plus"></i> Tambah Petugas
+        </a>
     </div>
 
-    @if($users->count() > 0)
+    @if($petugas->count() > 0)
         <div class="table-responsive">
-            <table class="users-table">
+            <table class="petugas-table">
                 <thead>
                     <tr>
-                        <th>Pengguna</th>
+                        <th>Petugas</th>
                         <th>Email</th>
                         <th class="col-registered">Terdaftar</th>
-                        <th>Pinjaman</th>
+                        <th>Transaksi Diproses</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($users as $user)
+                    @foreach($petugas as $p)
                         <tr>
                             <td>
                                 <div class="user-cell">
                                     <div class="user-avatar">
-                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                        {{ strtoupper(substr($p->name, 0, 1)) }}
                                     </div>
-                                    <strong>{{ $user->name }}</strong>
+                                    <strong>{{ $p->name }}</strong>
                                 </div>
                             </td>
-                            <td>{{ $user->email }}</td>
-                            <td class="col-registered">{{ $user->created_at->format('d M Y') }}</td>
-                            <td>{{ $user->borrowings->count() }}</td>
+                            <td>{{ $p->email }}</td>
+                            <td class="col-registered">{{ $p->created_at->format('d M Y') }}</td>
+                            <td>{{ $p->processed_count ?? 0 }}</td>
                             <td>
-                                <form action="{{ route('admin.users.destroy', $user) }}"
+                                <a href="{{ route('admin.petugas.edit', $p) }}" class="btn-action btn-edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <form action="{{ route('admin.petugas.destroy', $p) }}"
                                       method="POST"
                                       style="display:inline;"
-                                      onsubmit="return confirm('Yakin ingin menghapus pengguna ini?')">
+                                      onsubmit="return confirm('Yakin ingin menghapus petugas ini?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-action btn-delete">
@@ -220,28 +250,28 @@
             </table>
         </div>
 
-        @if($users->hasPages())
+        @if($petugas->hasPages())
             <div class="pagination-wrapper">
                 <div class="pagination-info">
-                    Page {{ $users->currentPage() }} of {{ $users->lastPage() }}
+                    Page {{ $petugas->currentPage() }} of {{ $petugas->lastPage() }}
                 </div>
                 <div class="pagination-controls">
-                    @if($users->onFirstPage())
+                    @if($petugas->onFirstPage())
                         <span>&lt;</span>
                     @else
-                        <a href="{{ $users->previousPageUrl() }}">&lt;</a>
+                        <a href="{{ $petugas->previousPageUrl() }}">&lt;</a>
                     @endif
 
-                    @foreach(range(1, $users->lastPage()) as $page)
-                        @if($page == $users->currentPage())
+                    @foreach(range(1, $petugas->lastPage()) as $page)
+                        @if($page == $petugas->currentPage())
                             <span class="active">{{ $page }}</span>
                         @else
-                            <a href="{{ $users->url($page) }}">{{ $page }}</a>
+                            <a href="{{ $petugas->url($page) }}">{{ $page }}</a>
                         @endif
                     @endforeach
 
-                    @if($users->hasMorePages())
-                        <a href="{{ $users->nextPageUrl() }}">&gt;</a>
+                    @if($petugas->hasMorePages())
+                        <a href="{{ $petugas->nextPageUrl() }}">&gt;</a>
                     @else
                         <span>&gt;</span>
                     @endif
@@ -250,8 +280,8 @@
         @endif
     @else
         <div style="text-align:center;padding:60px 20px;color:#999;">
-            <i class="fas fa-users" style="font-size:56px;opacity:0.3;"></i>
-            <h3 style="margin-top:16px;font-size:1rem;">Belum ada pengguna terdaftar</h3>
+            <i class="fas fa-user-tie" style="font-size:56px;opacity:0.3;"></i>
+            <h3 style="margin-top:16px;font-size:1rem;">Belum ada petugas terdaftar</h3>
         </div>
     @endif
 </div>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
 use App\Models\BorrowingRequest;
@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class QrVerificationController extends Controller
 {
-    // ── GET /admin/verify-qr ──────────────────────────────────
+    // ── GET /petugas/verify-qr ──────────────────────────────────
     public function index()
     {
         // Daftar pending yang bisa diverifikasi
@@ -19,11 +19,11 @@ class QrVerificationController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
-        return view('admin.borrowings.verify-qr', compact('pendingRequests'));
+        return view('petugas.borrowings.verify-qr', compact('pendingRequests'));
     }
 
-    // ── POST /admin/verify-qr ─────────────────────────────────
-    // Dipanggil saat admin scan / input QR code manual
+    // ── POST /petugas/verify-qr ─────────────────────────────────
+    // Dipanggil saat petugas scan / input QR code manual
     public function verify(Request $request)
     {
         $request->validate([
@@ -64,8 +64,8 @@ class QrVerificationController extends Controller
             ->with('kode_action', 'confirm');
     }
 
-    // ── POST /admin/verify-qr/confirm ────────────────────────
-    // Admin konfirmasi: ubah status pending → active, kurangi stok
+    // ── POST /petugas/verify-qr/confirm ────────────────────────
+    // Petugas konfirmasi: ubah status pending → active, kurangi stok
     public function confirm(Request $request)
     {
         $request->validate(['request_id' => 'required|exists:borrowing_requests,id']);
@@ -73,13 +73,13 @@ class QrVerificationController extends Controller
         $borrowingRequest = BorrowingRequest::with('items.book')->findOrFail($request->request_id);
 
         if (!$borrowingRequest->isPending()) {
-            return redirect()->route('admin.borrowings.index')
+            return redirect()->route('petugas.borrowings.index')
                 ->with('error', 'Permintaan ini sudah diproses sebelumnya.');
         }
 
         if ($borrowingRequest->isExpired()) {
             $borrowingRequest->update(['status' => 'cancelled']);
-            return redirect()->route('admin.borrowings.index')
+            return redirect()->route('petugas.borrowings.index')
                 ->with('error', 'Kode sudah kadaluarsa, peminjaman dibatalkan.');
         }
 
@@ -87,7 +87,7 @@ class QrVerificationController extends Controller
         foreach ($borrowingRequest->items as $item) {
             $book = $item->book;
             if ($book->available <= 0) {
-                return redirect()->route('admin.verify-qr.index')
+                return redirect()->route('petugas.verify-qr.index')
                     ->with('error', "Stok buku \"{$book->title}\" sudah habis, tidak bisa diverifikasi.");
             }
             $book->decrement('available');
@@ -96,14 +96,15 @@ class QrVerificationController extends Controller
         $borrowingRequest->update([
             'status'      => 'active',
             'verified_at' => Carbon::now(),
+            'processed_by' => auth()->id(),
         ]);
 
-        return redirect()->route('admin.borrowings.index')
+        return redirect()->route('petugas.borrowings.index')
             ->with('success', "Peminjaman {$borrowingRequest->qr_code} berhasil diverifikasi! Buku siap diserahkan.");
     }
 
-    // ── POST /admin/verify-qr/return ─────────────────────────
-    // Admin kembalikan buku: active → returned, stok naik
+    // ── POST /petugas/verify-qr/return ─────────────────────────
+    // Petugas kembalikan buku: active → returned, stok naik
     public function returnBook(Request $request)
     {
         $request->validate(['request_id' => 'required|exists:borrowing_requests,id']);
@@ -111,7 +112,7 @@ class QrVerificationController extends Controller
         $borrowingRequest = BorrowingRequest::with('items.book')->findOrFail($request->request_id);
 
         if (!$borrowingRequest->isActive()) {
-            return redirect()->route('admin.verify-qr.index')
+            return redirect()->route('petugas.verify-qr.index')
                 ->with('error', 'Peminjaman ini tidak dalam status "Sedang Dipinjam".');
         }
 
@@ -123,14 +124,15 @@ class QrVerificationController extends Controller
         $borrowingRequest->update([
             'status'      => 'returned',
             'returned_at' => Carbon::now(),
+            'processed_by' => auth()->id(),
         ]);
 
-        return redirect()->route('admin.borrowings.index')
+        return redirect()->route('petugas.borrowings.index')
             ->with('success', "Buku dari peminjaman {$borrowingRequest->qr_code} berhasil dikembalikan.");
     }
 
-    // ── GET /admin/borrowings/active ──────────────────────────
-    // Daftar peminjaman aktif di panel admin
+    // ── GET /petugas/borrowings/active ──────────────────────────
+    // Daftar peminjaman aktif di panel petugas
     public function activeList()
     {
         $requests = BorrowingRequest::whereIn('status', ['pending', 'active'])
@@ -146,17 +148,19 @@ class QrVerificationController extends Controller
             }
         }
 
-        return view('admin.borrowings.index', compact('requests'));
+        return view('petugas.borrowings.index', compact('requests'));
     }
 
-    // ── GET /admin/borrowings/history ─────────────────────────
+    // ── GET /petugas/borrowings/history ─────────────────────────
+    // Riwayat peminjaman yang diproses oleh petugas ini saja
     public function history()
     {
         $requests = BorrowingRequest::whereIn('status', ['returned', 'cancelled'])
+            ->where('processed_by', auth()->id())
             ->with(['user', 'items.book'])
             ->orderBy('updated_at', 'desc')
             ->paginate(15);
 
-        return view('admin.borrowings.history', compact('requests'));
+        return view('petugas.borrowings.history', compact('requests'));
     }
 }

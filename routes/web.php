@@ -4,9 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\BookController;
-use App\Http\Controllers\Admin\BorrowingController;   // tetap ada untuk fitur lama jika masih dipakai
-use App\Http\Controllers\Admin\QrVerificationController;
+use App\Http\Controllers\Admin\BorrowingController;
+use App\Http\Controllers\Admin\BorrowingHistoryController;
+use App\Http\Controllers\Admin\PetugasController as AdminPetugasController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Petugas\PetugasController;
+use App\Http\Controllers\Petugas\QrVerificationController as PetugasQrController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\FavoriteController;
@@ -44,6 +47,21 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/peminjaman/{id}',       [BorrowController::class, 'detail'])->name('user.borrowings.detail');
 });
 
+// ── Petugas ───────────────────────────────────────────────────
+Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')->group(function () {
+    Route::get('/dashboard', [PetugasController::class, 'dashboard'])->name('dashboard');
+
+    // Verifikasi QR / Kode
+    Route::get('/verify-qr',          [PetugasQrController::class, 'index'])->name('verify-qr.index');
+    Route::post('/verify-qr',         [PetugasQrController::class, 'verify'])->name('verify-qr.verify');
+    Route::post('/verify-qr/confirm', [PetugasQrController::class, 'confirm'])->name('verify-qr.confirm');
+    Route::post('/verify-qr/return',  [PetugasQrController::class, 'returnBook'])->name('verify-qr.return');
+
+    // Kelola Peminjaman
+    Route::get('/borrowings',         [PetugasQrController::class, 'activeList'])->name('borrowings.index');
+    Route::get('/borrowings/history', [PetugasQrController::class, 'history'])->name('borrowings.history');
+});
+
 // ── Admin ─────────────────────────────────────────────────────
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
@@ -56,16 +74,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/books/{book}',       [BookController::class, 'update'])->name('books.update');
     Route::delete('/books/{book}',    [BookController::class, 'destroy'])->name('books.destroy');
 
-    // ── Verifikasi QR (BARU) ─────────────────────────────────
-    Route::get('/verify-qr',          [QrVerificationController::class, 'index'])->name('verify-qr.index');
-    Route::post('/verify-qr',         [QrVerificationController::class, 'verify'])->name('verify-qr.verify');
-    Route::post('/verify-qr/confirm', [QrVerificationController::class, 'confirm'])->name('verify-qr.confirm');
-    Route::post('/verify-qr/return',  [QrVerificationController::class, 'returnBook'])->name('verify-qr.return');
-
-    // Peminjaman (tampilan list — pakai QrVerificationController)
-    Route::get('/borrowings',         [QrVerificationController::class, 'activeList'])->name('borrowings.index');
-    Route::get('/borrowings/history', [QrVerificationController::class, 'history'])->name('borrowings.history');
-
     // Pengguna
     Route::get('/users',              [AdminUserController::class, 'index'])->name('users.index');
     Route::get('/users/create',       [AdminUserController::class, 'create'])->name('users.create');
@@ -73,4 +81,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/users/{user}/edit',  [AdminUserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}',       [AdminUserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}',    [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    // Petugas
+    Route::get('/petugas',              [AdminPetugasController::class, 'index'])->name('petugas.index');
+    Route::get('/petugas/create',       [AdminPetugasController::class, 'create'])->name('petugas.create');
+    Route::post('/petugas',             [AdminPetugasController::class, 'store'])->name('petugas.store');
+    Route::get('/petugas/{petuga}/edit',[AdminPetugasController::class, 'edit'])->name('petugas.edit');
+    Route::put('/petugas/{petuga}',     [AdminPetugasController::class, 'update'])->name('petugas.update');
+    Route::delete('/petugas/{petuga}',  [AdminPetugasController::class, 'destroy'])->name('petugas.destroy');
+
+    // Riwayat Peminjaman (semua petugas)
+    Route::get('/borrowings/history', [BorrowingHistoryController::class, 'index'])->name('borrowings.history');
 });

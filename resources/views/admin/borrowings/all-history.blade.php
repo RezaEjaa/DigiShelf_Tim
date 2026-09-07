@@ -1,17 +1,16 @@
 @extends('layouts.app')
 
 @section('title', 'Riwayat Peminjaman - Digishelf')
-@section('page-title', 'Riwayat Peminjaman')
-@section('page-subtitle', 'Histori peminjaman yang telah selesai atau dibatalkan')
+@section('page-title', 'Riwayat Peminjaman Semua Petugas')
+@section('page-subtitle', 'Histori peminjaman yang telah selesai atau dibatalkan dari semua petugas')
 
 @section('sidebar-menu')
     <li><a href="{{ route('admin.dashboard') }}"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
     <li><a href="{{ route('admin.books.index') }}"><i class="fas fa-book"></i><span>Kelola Buku</span></a></li>
     <li><a href="{{ route('admin.books.create') }}"><i class="fas fa-plus-circle"></i><span>Tambah Buku</span></a></li>
-    <li><a href="{{ route('admin.borrowings.index') }}"><i class="fas fa-exchange-alt"></i><span>Kelola Peminjaman</span></a></li>
-    <li><a href="{{ route('admin.verify-qr.index') }}"><i class="fas fa-barcode"></i><span>Verifikasi Kode</span></a></li>
-    <li><a href="{{ route('admin.borrowings.history') }}" class="active"><i class="fas fa-history"></i><span>Riwayat Peminjaman</span></a></li>
     <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users"></i><span>Kelola Pengguna</span></a></li>
+    <li><a href="{{ route('admin.petugas.index') }}"><i class="fas fa-user-tie"></i><span>Kelola Petugas</span></a></li>
+    <li><a href="{{ route('admin.borrowings.history') }}" class="active"><i class="fas fa-history"></i><span>Riwayat Peminjaman</span></a></li>
     <li class="logout-section">
         <form action="{{ url('/logout') }}" method="POST" class="logout-form">@csrf
             <button type="submit"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
@@ -25,7 +24,7 @@
     .section-title { font-size:1.05rem; color:var(--text-dark); font-weight:600; margin-bottom:22px; }
 
     .table-responsive { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-    .borrow-table { width:100%; border-collapse:collapse; min-width:620px; }
+    .borrow-table { width:100%; border-collapse:collapse; min-width:720px; }
     .borrow-table th { background:var(--cream); padding:12px 14px; text-align:left; font-size:0.85rem; font-weight:600; color:var(--text-dark); border-bottom:2px solid #E0E0E0; white-space:nowrap; }
     .borrow-table td { padding:12px 14px; border-bottom:1px solid #F5F5F5; font-size:0.84rem; vertical-align:middle; }
     .borrow-table tr:hover { background:#FAFAFA; }
@@ -36,6 +35,7 @@
 
     .qr-code { font-family:'Courier New',monospace; font-weight:700; color:var(--wood-dark); font-size:0.88rem; }
     .books-cell { max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .petugas-badge { background:#E3F2FD; color:#1976D2; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; }
 
     .pagination-wrapper { margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
     .pagination-info { color:#94A3B8; font-size:0.84rem; }
@@ -45,8 +45,15 @@
     .pagination-controls a:hover { background:var(--wood-medium); color:white; }
     .pagination-controls .active { background:var(--wood-dark); color:white; }
 
-    @media (max-width:768px) { .section { padding:16px; } .borrow-table th, .borrow-table td { padding:10px; font-size:0.8rem; } }
-    @media (max-width:480px) { .section { padding:12px; } }
+    @media (max-width:768px) {
+        .section { padding:16px; }
+        .borrow-table th, .borrow-table td { padding:10px; font-size:0.8rem; }
+        .col-petugas { display: none; }
+    }
+    @media (max-width:480px) {
+        .section { padding:12px; }
+        .col-dates { display: none; }
+    }
 </style>
 
 <div class="section">
@@ -60,9 +67,10 @@
                         <th>Kode</th>
                         <th>Peminjam</th>
                         <th>Buku</th>
-                        <th>Tgl Ambil</th>
-                        <th>Tgl Kembali</th>
-                        <th>Selesai</th>
+                        <th class="col-dates">Tgl Ambil</th>
+                        <th class="col-dates">Tgl Kembali</th>
+                        <th class="col-dates">Selesai</th>
+                        <th class="col-petugas">Petugas</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -74,12 +82,19 @@
                             <td class="books-cell" title="{{ $req->items->map(fn($i)=>$i->book->title)->join(', ') }}">
                                 {{ $req->items->map(fn($i)=>$i->book->title)->join(', ') }}
                             </td>
-                            <td>{{ $req->pickup_date->format('d M Y') }}</td>
-                            <td>{{ $req->return_date->format('d M Y') }}</td>
-                            <td>
+                            <td class="col-dates">{{ $req->pickup_date->format('d M Y') }}</td>
+                            <td class="col-dates">{{ $req->return_date->format('d M Y') }}</td>
+                            <td class="col-dates">
                                 @if($req->returned_at)
                                     {{ $req->returned_at->format('d M Y') }}
                                 @elseif($req->isCancelled())
+                                    <span style="color:#bbb;">—</span>
+                                @endif
+                            </td>
+                            <td class="col-petugas">
+                                @if($req->processedBy)
+                                    <span class="petugas-badge">{{ $req->processedBy->name }}</span>
+                                @else
                                     <span style="color:#bbb;">—</span>
                                 @endif
                             </td>
