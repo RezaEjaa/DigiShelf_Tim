@@ -13,7 +13,7 @@ use App\Http\Controllers\Petugas\QrVerificationController as PetugasQrController
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\FavoriteController;
-
+use App\Http\Controllers\BackupController;
 // ── Public ────────────────────────────────────────────────────
 Route::get('/', fn () => view('welcome'));
 Route::get('/scan-peminjaman/{qr_code}', [BorrowController::class, 'scan'])->name('borrow.scan');
@@ -83,13 +83,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('/users/{user}',    [AdminUserController::class, 'destroy'])->name('users.destroy');
 
     // Petugas
-    Route::get('/petugas',              [AdminPetugasController::class, 'index'])->name('petugas.index');
-    Route::get('/petugas/create',       [AdminPetugasController::class, 'create'])->name('petugas.create');
-    Route::post('/petugas',             [AdminPetugasController::class, 'store'])->name('petugas.store');
-    Route::get('/petugas/{petuga}/edit',[AdminPetugasController::class, 'edit'])->name('petugas.edit');
-    Route::put('/petugas/{petuga}',     [AdminPetugasController::class, 'update'])->name('petugas.update');
-    Route::delete('/petugas/{petuga}',  [AdminPetugasController::class, 'destroy'])->name('petugas.destroy');
+    Route::get('/petugas',               [AdminPetugasController::class, 'index'])->name('petugas.index');
+    Route::get('/petugas/create',        [AdminPetugasController::class, 'create'])->name('petugas.create');
+    Route::post('/petugas',              [AdminPetugasController::class, 'store'])->name('petugas.store');
+    Route::get('/petugas/{petuga}/edit', [AdminPetugasController::class, 'edit'])->name('petugas.edit');
+    Route::put('/petugas/{petuga}',      [AdminPetugasController::class, 'update'])->name('petugas.update');
+    Route::delete('/petugas/{petuga}',   [AdminPetugasController::class, 'destroy'])->name('petugas.destroy');
 
-    // Riwayat Peminjaman (semua petugas)
+    // Riwayat Peminjaman
     Route::get('/borrowings/history', [BorrowingHistoryController::class, 'index'])->name('borrowings.history');
-});
+
+    // Backup Database
+    Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
+    Route::post('/backup', [BackupController::class, 'create'])->name('backup.create');
+    Route::get('/backup/download/{filename}', [BackupController::class, 'download'])->name('backup.download');
