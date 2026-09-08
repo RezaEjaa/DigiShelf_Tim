@@ -97,3 +97,4 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
     Route::post('/backup', [BackupController::class, 'create'])->name('backup.create');
     Route::get('/backup/download/{filename}', [BackupController::class, 'download'])->name('backup.download');
+});

@@ -37,12 +37,6 @@
         </a>
     </li>
     <li>
-        <a href="{{ route('admin.users.index') }}">
-            <i class="fas fa-users"></i><span>Kelola Pengguna</span>
-        </a>
-    </li>
-
-    <li>
         <a href="{{ route('admin.backup.index') }}">
             <i class="fas fa-database"></i><span>Backup Database</span>
         </a>

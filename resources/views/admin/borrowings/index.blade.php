@@ -12,6 +12,11 @@
     <li><a href="{{ route('admin.verify-qr.index') }}"><i class="fas fa-barcode"></i><span>Verifikasi Kode</span></a></li>
     <li><a href="{{ route('admin.borrowings.history') }}"><i class="fas fa-history"></i><span>Riwayat Peminjaman</span></a></li>
     <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users"></i><span>Kelola Pengguna</span></a></li>
+    <li>
+        <a href="{{ route('admin.backup.index') }}">
+            <i class="fas fa-database"></i><span>Backup Database</span>
+        </a>
+    </li>
     <li class="logout-section">
         <form action="{{ url('/logout') }}" method="POST" class="logout-form">@csrf
             <button type="submit"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>

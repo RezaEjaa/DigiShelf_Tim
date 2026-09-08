@@ -24,26 +24,20 @@
     </li>
 
     <li>
-        <a href="{{ route('admin.borrowings.index') }}">
-            <i class="fas fa-exchange-alt"></i><span>Kelola Peminjaman</span>
+        <a href="{{ route('admin.users.index') }}">
+            <i class="fas fa-users"></i><span>Kelola Pengguna</span>
         </a>
     </li>
 
     <li>
-        <a href="{{ route('admin.verify-qr.index') }}">
-            <i class="fas fa-barcode"></i><span>Verifikasi Kode</span>
+        <a href="{{ route('admin.petugas.index') }}">
+            <i class="fas fa-user-tie"></i><span>Kelola Petugas</span>
         </a>
     </li>
 
     <li>
         <a href="{{ route('admin.borrowings.history') }}">
             <i class="fas fa-history"></i><span>Riwayat Peminjaman</span>
-        </a>
-    </li>
-
-    <li>
-        <a href="{{ route('admin.users.index') }}">
-            <i class="fas fa-users"></i><span>Kelola Pengguna</span>
         </a>
     </li>
 
@@ -361,16 +355,16 @@
 
                     <div>
                         <div class="file-name">
-                            {{ basename($backup->path()) }}
+                            {{ $backup['name'] }}
                         </div>
 
                        <small style="color:#888;">
-    Backup dibuat {{ $backup->date()->format('d/m/Y H:i:s') }}
+    Backup dibuat {{ \Carbon\Carbon::createFromTimestamp($backup['date'])->format('d/m/Y H:i:s') }} • {{ number_format($backup['size'] / 1024, 2) }} KB
 </small>                    </div>
 
                 </div>
 
-                <a href="{{ route('admin.backup.download', basename($backup->path())) }}"
+                <a href="{{ route('admin.backup.download', $backup['name']) }}"
                    class="download-btn">
                     <i class="fas fa-download"></i>
                     Download
