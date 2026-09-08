@@ -22,23 +22,18 @@
         </a>
     </li>
     <li>
-        <a href="{{ route('admin.borrowings.index') }}" >
-            <i class="fas fa-exchange-alt"></i><span>Kelola Peminjaman</span>
+        <a href="{{ route('admin.users.index') }}" >
+            <i class="fas fa-users"></i><span>Kelola Pengguna</span>
         </a>
     </li>
     <li>
-        <a href="{{ route('admin.verify-qr.index') }}" >
-            <i class="fas fa-barcode"></i><span>Verifikasi Kode</span>
+        <a href="{{ route('admin.petugas.index') }}" >
+            <i class="fas fa-user-tie"></i><span>Kelola Petugas</span>
         </a>
     </li>
     <li>
         <a href="{{ route('admin.borrowings.history') }}" >
             <i class="fas fa-history"></i><span>Riwayat Peminjaman</span>
-        </a>
-    </li>
-    <li>
-        <a href="{{ route('admin.users.index') }}" >
-            <i class="fas fa-users"></i><span>Kelola Pengguna</span>
         </a>
     </li>
     <li class="logout-section">
@@ -355,9 +350,9 @@
         <div class="stat-label">Total Pengguna</div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-        <div class="stat-value">{{ $stats['activity_rate'] }}%</div>
-        <div class="stat-label">Tingkat Aktivitas</div>
+        <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+        <div class="stat-value">{{ $stats['total_petugas'] }}</div>
+        <div class="stat-label">Total Petugas</div>
     </div>
 </div>
 

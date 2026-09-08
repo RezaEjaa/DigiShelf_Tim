@@ -36,6 +36,16 @@ class User extends Authenticatable
         return $this->hasMany(Borrowing::class);
     }
 
+    public function borrowingRequests()
+    {
+        return $this->hasMany(BorrowingRequest::class);
+    }
+
+    public function processedBorrowings()
+    {
+        return $this->hasMany(BorrowingRequest::class, 'processed_by');
+    }
+
     public function favorites()
     {
         return $this->hasMany(Favorite::class);
@@ -44,5 +54,10 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->role === 'admin';
+    }
+
+    public function isPetugas()
+    {
+        return $this->role === 'petugas';
     }
 }

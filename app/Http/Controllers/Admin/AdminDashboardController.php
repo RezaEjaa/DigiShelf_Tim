@@ -24,7 +24,7 @@ class AdminDashboardController extends Controller
                                     ->where('expires_at', '>', Carbon::now())
                                     ->count(),
             'total_users'      => User::where('role', 'user')->count(),
-            'activity_rate'    => $this->calcActivityRate(),
+            'total_petugas'    => User::where('role', 'petugas')->count(),
         ];
 
         // Peminjaman aktif untuk ditampilkan di dashboard
@@ -41,15 +41,4 @@ class AdminDashboardController extends Controller
         return view('admin.dashboard', compact('stats', 'activeBorrowings', 'latestBooks'));
     }
 
-    private function calcActivityRate(): int
-    {
-        $totalUsers = User::where('role', 'user')->count();
-        if ($totalUsers === 0) return 0;
-
-        $activeUsers = BorrowingRequest::whereIn('status', ['active', 'pending'])
-            ->distinct('user_id')
-            ->count('user_id');
-
-        return (int) round(($activeUsers / $totalUsers) * 100);
-    }
 }

@@ -274,55 +274,6 @@
         .book-item-dash:nth-child(n+3) { display: none; }
         .hero-stats { gap: 12px; }
     }
-.library-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-    margin: 30px 0;
-}
-
-.library-stat-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 22px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
-    border: 1px solid #eee5dc;
-}
-
-.library-stat-icon {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    border-radius: 12px;
-    background: #F5EBDD;
-    color: #6D4C41;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-}
-
-.library-stat-info span {
-    display: block;
-    color: #888;
-    font-size: 13px;
-}
-
-.library-stat-info strong {
-    display: block;
-    color: #3E2723;
-    font-size: 28px;
-}
-
-@media (max-width: 768px) {
-    .library-stats {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-} 
 </style>
 
 {{-- HERO --}}
@@ -348,95 +299,7 @@
         </div>
     </div>
 </div>
-<!-- BUKU TERFAVORIT -->
-<div class="section">
-    <div class="section-head">
-        <h2>🔥 Buku Terfavorit</h2>
-    </div>
 
-    @php
-        // Ambil data buku langsung dari tabel Book untuk memastikan UI muncul
-        $popularBooks = \App\Models\Book::take(4)->get();
-    @endphp
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
-        @forelse($popularBooks as $index => $book)
-            <div style="background: #FAF6F0; border-radius: 12px; padding: 15px; display: flex; gap: 15px; align-items: center; border: 1px solid #E8DFD5;">
-                <div style="width: 60px; height: 85px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #eee;">
-                    @if($book->cover_image)
-                        <img src="{{ asset('img/covers/' . $book->cover_image) }}" alt="{{ $book->title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                    @else
-                        <div style="display: flex; height: 100%; align-items: center; justify-content: center; color: #888;">
-                            <i class="fas fa-book"></i>
-                        </div>
-                    @endif
-                </div>
-                <div style="overflow: hidden;">
-                    <span style="background: #5D4037; color: #fff; font-size: 0.68rem; padding: 2px 8px; border-radius: 10px; font-weight: bold;">
-                        Top #{{ $index + 1 }}
-                    </span>
-                    <h5 style="margin: 5px 0 2px; font-size: 0.95rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        {{ $book->title }}
-                    </h5>
-                    <p style="margin: 0; font-size: 0.8rem; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        {{ $book->author ?? 'Penulis tidak diketahui' }}
-                    </p>
-                </div>
-            </div>
-        @empty
-            <p style="color: #888; margin: 0;">Belum ada data buku di database.</p>
-        @endforelse
-    </div>
-</div>
-{{-- STATISTIK PERPUSTAKAAN --}}
-@php
-    $totalBookTitles = \App\Models\Book::count();
-    $totalBookStock = \App\Models\Book::sum('stock');
-    $totalBookAvailable = \App\Models\Book::sum('available');
-    $totalBookBorrowed = max(0, $totalBookStock - $totalBookAvailable);
-@endphp
-
-<div class="library-stats">
-    <div class="library-stat-card">
-        <div class="library-stat-icon">
-            <i class="fas fa-book"></i>
-        </div>
-        <div class="library-stat-info">
-            <span>Total Judul</span>
-            <strong>{{ $totalBookTitles }}</strong>
-        </div>
-    </div>
-
-    <div class="library-stat-card">
-        <div class="library-stat-icon">
-            <i class="fas fa-layer-group"></i>
-        </div>
-        <div class="library-stat-info">
-            <span>Total Eksemplar</span>
-            <strong>{{ $totalBookStock }}</strong>
-        </div>
-    </div>
-
-    <div class="library-stat-card">
-        <div class="library-stat-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <div class="library-stat-info">
-            <span>Buku Tersedia</span>
-            <strong>{{ $totalBookAvailable }}</strong>
-        </div>
-    </div>
-
-    <div class="library-stat-card">
-        <div class="library-stat-icon">
-            <i class="fas fa-book-reader"></i>
-        </div>
-        <div class="library-stat-info">
-            <span>Sedang Dipinjam</span>
-            <strong>{{ $totalBookBorrowed }}</strong>
-        </div>
-    </div>
-</div>
 {{-- BUKU TERBARU --}}
 <div class="section">
     <div class="section-head">
