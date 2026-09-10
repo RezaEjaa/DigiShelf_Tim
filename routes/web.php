@@ -68,6 +68,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Buku
     Route::get('/books',              [BookController::class, 'index'])->name('books.index');
+    Route::get('/books/recycle-bin', [BookController::class, 'recycleBin'])->name('books.recycle-bin');
+    Route::patch('/books/{book}/restore', [BookController::class, 'restore'])->name('books.restore');
+    Route::delete('/books/{book}/force-delete', [BookController::class, 'forceDelete'])->name('books.force-delete');
     Route::get('/books/create',       [BookController::class, 'create'])->name('books.create');
     Route::post('/books',             [BookController::class, 'store'])->name('books.store');
     Route::get('/books/{book}/edit',  [BookController::class, 'edit'])->name('books.edit');
