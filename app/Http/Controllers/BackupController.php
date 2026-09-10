@@ -9,22 +9,17 @@ class BackupController extends Controller
 {
     public function index()
     {
-        $backupPath = 'laravel-backup';
-        $disk = Storage::disk('local');
+        $disk = Storage::disk('backups');
 
         $backups = collect();
 
-        if ($disk->exists($backupPath)) {
-            $files = $disk->files($backupPath);
-
-            foreach ($files as $file) {
-                $backups->push([
-                    'path' => $file,
-                    'name' => basename($file),
-                    'size' => $disk->size($file),
-                    'date' => $disk->lastModified($file),
-                ]);
-            }
+        foreach ($disk->files() as $file) {
+            $backups->push([
+                'path' => $file,
+                'name' => basename($file),
+                'size' => $disk->size($file),
+                'date' => $disk->lastModified($file),
+            ]);
         }
 
         $backups = $backups->sortByDesc('date');
@@ -78,9 +73,8 @@ class BackupController extends Controller
 
     public function download(string $filename)
     {
-        $backupPath = 'laravel-backup';
-        $disk = Storage::disk('local');
-        $filePath = $backupPath . '/' . basename($filename);
+        $disk = Storage::disk('backups');
+        $filePath = basename($filename);
 
         if ($disk->exists($filePath)) {
             return response()->download($disk->path($filePath));
