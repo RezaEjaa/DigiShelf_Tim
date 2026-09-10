@@ -22,6 +22,11 @@
         </a>
     </li>
     <li>
+        <a href="{{ route('admin.books.recycle-bin') }}" >
+            <i class="fas fa-trash-alt"></i><span>Recycle Bin</span>
+        </a>
+    </li>
+    <li>
         <a href="{{ route('admin.borrowings.index') }}" >
             <i class="fas fa-exchange-alt"></i><span>Kelola Peminjaman</span>
         </a>

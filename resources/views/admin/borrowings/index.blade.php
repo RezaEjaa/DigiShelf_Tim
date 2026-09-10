@@ -8,6 +8,7 @@
     <li><a href="{{ route('admin.dashboard') }}"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
     <li><a href="{{ route('admin.books.index') }}"><i class="fas fa-book"></i><span>Kelola Buku</span></a></li>
     <li><a href="{{ route('admin.books.create') }}"><i class="fas fa-plus-circle"></i><span>Tambah Buku</span></a></li>
+    <li><a href="{{ route('admin.books.recycle-bin') }}"><i class="fas fa-trash-alt"></i><span>Recycle Bin</span></a></li>
     <li><a href="{{ route('admin.borrowings.index') }}" class="active"><i class="fas fa-exchange-alt"></i><span>Kelola Peminjaman</span></a></li>
     <li><a href="{{ route('admin.verify-qr.index') }}"><i class="fas fa-barcode"></i><span>Verifikasi Kode</span></a></li>
     <li><a href="{{ route('admin.borrowings.history') }}"><i class="fas fa-history"></i><span>Riwayat Peminjaman</span></a></li>

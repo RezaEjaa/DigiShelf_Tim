@@ -31,6 +31,13 @@ class BookController extends Controller
         return view('admin.books.index', compact('books'));
     }
 
+    public function recycleBin()
+    {
+        $books = Book::onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(20);
+
+        return view('admin.books.recycle-bin', compact('books'));
+    }
+
     /**
      * Show the form for creating a new book.
      */
@@ -156,14 +163,32 @@ class BookController extends Controller
                 ->with('error', 'Buku tidak dapat dihapus karena masih ada peminjaman aktif!');
         }
 
-        // Delete cover image if exists
-        if ($book->cover_image && file_exists(public_path('img/covers/' . $book->cover_image))) {
-            unlink(public_path('img/covers/' . $book->cover_image));
-        }
-
         $book->delete();
 
         return redirect()->route('admin.books.index')
-            ->with('success', 'Buku berhasil dihapus!');
+            ->with('success', 'Buku dipindahkan ke Recycle Bin!');
+    }
+
+    public function restore(int $book)
+    {
+        $deletedBook = Book::onlyTrashed()->findOrFail($book);
+        $deletedBook->restore();
+
+        return redirect()->route('admin.books.recycle-bin')
+            ->with('success', 'Buku berhasil dipulihkan!');
+    }
+
+    public function forceDelete(int $book)
+    {
+        $deletedBook = Book::onlyTrashed()->findOrFail($book);
+
+        if ($deletedBook->cover_image && file_exists(public_path('img/covers/' . $deletedBook->cover_image))) {
+            unlink(public_path('img/covers/' . $deletedBook->cover_image));
+        }
+
+        $deletedBook->forceDelete();
+
+        return redirect()->route('admin.books.recycle-bin')
+            ->with('success', 'Buku dihapus permanen!');
     }
 }
