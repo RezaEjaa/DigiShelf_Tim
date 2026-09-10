@@ -412,7 +412,7 @@
         <div class="books-display">
             @if($latestBooks->count() > 0)
                 @foreach($latestBooks as $index => $book)
-                    <div class="book-item">
+                    <a class="book-item" href="/admin/books">
                         <div class="book-cover-display" style="background: {{ $colors[$index % 5] }};">
                             @if($book->cover_image)
                                 <img src="{{ asset('img/covers/' . $book->cover_image) }}" alt="{{ $book->title }}">
@@ -420,7 +420,7 @@
                                 <i class="fas fa-book"></i>
                             @endif
                         </div>
-                    </div>
+                    </a>
                 @endforeach
             @endif
 
